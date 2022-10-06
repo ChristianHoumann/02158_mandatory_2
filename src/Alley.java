@@ -8,8 +8,8 @@ public class Alley {
 
     protected Alley() { }
 
-    public static Alley create() {
-        return new Alley();                                     // Change to use desired implementation
+    public static MultiAlley create() {
+        return new MultiAlley();                                     // Change to use desired implementation
     }
 
     /* Block until car no. may enter alley */
