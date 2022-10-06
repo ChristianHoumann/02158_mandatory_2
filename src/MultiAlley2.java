@@ -8,6 +8,8 @@ public class MultiAlley2 extends Alley {
 
     int up, down;
     Semaphore upSem, downSem;
+    int downWaiting = 0; int upWaiting = 0;
+    boolean Bdown = up == 0; boolean Bup = down == 0;
     
     protected MultiAlley2() {
         up = 0;   down = 0;
@@ -19,14 +21,19 @@ public class MultiAlley2 extends Alley {
     public void enter(int no) throws InterruptedException {
         if (no < 5) {
             downSem.P();
-            Thread.sleep(100);
-            if (down == 0) upSem.P();    // block for up-going cars
+            if (down == 0) {
+                upSem.P();
+            }    // block for up-going cars
+            
+            Thread.sleep(800);
             down++;
             downSem.V();
         } else {
             upSem.P();
-            Thread.sleep(100);
-            if (up == 0) downSem.P();    // block for down-going cars
+            if (up == 0)  {
+                downSem.P();
+            }
+            
             up++;
             upSem.V();
         }
