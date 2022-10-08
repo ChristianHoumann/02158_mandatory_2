@@ -1,46 +1,26 @@
 #define N 8 // Number of cars
 
-
 int nu = 0; // Number up
 int nd = 0; // Number down
 int du = 0; // Delayed up
 int dd = 0; // Delayed down
-
 
 //Semaphores
 int e = 1; //Entry
 int u = 0; //Up
 int d = 0; //Down
 
-
 // Semaphore actions
 #define P(s) atomic { s > 0 -> s--; };
 #define V(s) s++;
 
 
-inline SIGNAL() {
-  if
-  :: (nu == 0 && dd > 0) -> {
-    // Awaken a car going down
-    dd--;
-    V(d);
-  }
-  :: (nd == 0 && du > 0) -> {
-    // Awaken a car going up
-    du--;
-    V(u);
-  }
-  :: else -> V(e);
-  fi
-}
-
-
 // Enter logic
 inline enter(direction) {
+  P(e);
   if
   :: direction == 0 -> {
     // Car going up
-    P(e);
     if
     :: nd > 0 -> {
       du++;
@@ -50,11 +30,16 @@ inline enter(direction) {
     :: else -> skip;
     fi;
     nu++;
-    SIGNAL();
+    if
+    :: du > 0 -> {
+      du--;
+      V(u);
+    }
+    :: else -> V(e);
+    fi;
   }
   :: direction == 1 -> {
     // Car going down
-    P(e);
     if
     :: nu > 0 -> {
       dd++;
@@ -64,7 +49,13 @@ inline enter(direction) {
     :: else -> skip;
     fi;
     nd++;
-    SIGNAL();
+    if
+    :: dd > 0 -> {
+      dd--;
+      V(d);
+    }
+    :: else -> V(e);
+    fi;
   }
   :: else -> skip
   fi
@@ -73,18 +64,29 @@ inline enter(direction) {
 
 // Exit logic
 inline leave(direction) {
+  P(e);
   if
   :: direction == 0 -> {
     // Car going up
-    P(e);
     nu--;
-    SIGNAL();
+    if
+    :: nu == 0 && dd > 0 -> {
+      dd--;
+      V(d);
+    }
+    :: else -> V(e);
+    fi;
   }
   :: direction == 1 -> {
     // Car going down
-    P(e);
     nd--;
-    SIGNAL();    
+    if
+    :: nd == 0 && du > 0 -> {
+      du--;
+      V(u);
+    }
+    :: else -> V(e);
+    fi;
   }
   :: else -> skip
   fi
