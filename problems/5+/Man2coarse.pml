@@ -8,11 +8,11 @@ inline enter(direction) {
   if
   :: direction == 0 -> {
     // Car going up
-    atomic { /*await*/ nd == 0 -> nu++; }
+    atomic { nd == 0 -> nu++; }
   }
   :: direction == 1 -> {
     // Car going down
-    atomic { /*await*/ nu == 0 -> nd++; }
+    atomic { nu == 0 -> nd++; }
   }
   :: else -> skip
   fi
@@ -23,11 +23,11 @@ inline leave(direction) {
   if
   :: direction == 0 -> {
     // Car going up
-    atomic { nu--; }
+    nu--;
   }
   :: direction == 1 -> {
     // Car going down
-    atomic { nd--; }
+    nd--;
   }
   :: else -> skip
   fi
