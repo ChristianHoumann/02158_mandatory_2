@@ -51,9 +51,6 @@ inline enter(direction) {
     fi;
     nu++;
     SIGNAL();
-    P(e);
-    nu--;
-    SIGNAL();
   }
   :: direction == 1 -> {
     // Car going down
@@ -68,9 +65,6 @@ inline enter(direction) {
     fi;
     nd++;
     SIGNAL();
-    P(e);
-    nd--;
-    SIGNAL();    
   }
   :: else -> skip
   fi
@@ -82,11 +76,15 @@ inline leave(direction) {
   if
   :: direction == 0 -> {
     // Car going up
-    atomic { nu--; }
+    P(e);
+    nu--;
+    SIGNAL();
   }
   :: direction == 1 -> {
     // Car going down
-    atomic { nd--; }
+    P(e);
+    nd--;
+    SIGNAL();    
   }
   :: else -> skip
   fi
