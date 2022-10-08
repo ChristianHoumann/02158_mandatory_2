@@ -8,11 +8,10 @@
 
 bool enter[N];  /* Request to enter flags */
 bool ok[N];     /* Entry granted flags    */
-
 int incrit = 0; /* For easy statement of mutual exlusion */
 
 /*
- * Below it is utilised that the first N process instances will get
+ * Below it is utilised that the first N process instances will get 
  * pids from 0 to (N-1).  Therefore, the pid can be directly used as 
  * an index in the flag arrays.
  */
@@ -25,7 +24,7 @@ active [N] proctype P()
 
 entry:	
 		enter[_pid] = true;
-		/*await*/ ok[_pid] ->
+		/*await*/ ok[_pid] -> 
 
 crit:	/* Critical section */
 		incrit++;
@@ -33,35 +32,39 @@ crit:	/* Critical section */
 		incrit--;
   	
 exit: 
-		ok[_pid] = 0;
-
+		/* Your code here */
+		enter[_pid] = false;
+		ok[_pid] = false;
+		
+		
 		/* Non-critical setion (may or may not terminate) */
 		do :: true -> skip :: break od
 
-	od;
+	od
 }
 
 active proctype Coordinator()
 {
 	do
-	::
-		int i =0;
+	::	
+		/*  Your code here instead of skip*/
+		int i = 0;
 		do
 		::
-			i < N ->
-				/*await*/ enter[i];
-				enter[i] = false;
-				if
-					:: i - 1 >= 0 -> /*await*/ !ok[i-1];
-					:: else -> /*await*/ !ok[N-1];
-				fi
-				ok[i] = true;
-				i++;
-		:: else -> break
+			if 
+			:: i < N -> if
+				    :: enter[i] -> ok[i] = true;
+					      	/*await*/ !ok[i] ->
+				    :: else -> skip;
+				    fi;
+				    i++;
+		   	:: else -> break;
+		   	fi
 		od
+		
 	od
 }
 
-/* Liveness properties */
+/* liveness property */
+ltl fair0 { [] (P[0]@entry -> <> P[0]@crit) }
 
-ltl fair0 { [] ( (P[0]@entry) -> <>  (P[0]@crit) ) } 
