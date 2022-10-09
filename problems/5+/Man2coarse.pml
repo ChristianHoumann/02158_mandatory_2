@@ -40,7 +40,7 @@ active [N] proctype C() {
 	do
 	::
 		if
-		:: _pid < 5 ->
+		:: _pid < 4 ->
 			enter(1);
 			inDown++;
 			inDown--;
