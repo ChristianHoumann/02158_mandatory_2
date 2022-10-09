@@ -12,6 +12,7 @@ int up = 0;
 
 // Enter logic
 inline enter(direction) {
+  int t; // Temporary variable
   if
   :: direction == 0 ->
     P(downSem);
@@ -19,8 +20,8 @@ inline enter(direction) {
     :: down == 0 -> P(upSem);
     :: else -> skip
     fi;
-    int td = down; // Temp variable for down
-    down = td + 1;
+    t = down; // Temp variable for down
+    down = t + 1;
     V(downSem)
   :: direction == 1 ->
     P(upSem);
@@ -28,17 +29,19 @@ inline enter(direction) {
     :: up == 0 -> P(downSem);
     :: else -> skip
     fi;
-    int tu = up; // Temp variable for up
-    up = tu + 1;
+    t = up; // Temp variable for up
+    up = t + 1;
     V(upSem)
   fi
 }
 
 // Exit logic
 inline leave(direction) {
+  int t; // Temporary variable
   if
   :: direction == 0 ->
-    down--;
+    t = down;
+    down = t - 1;
     if
     :: down == 0 ->
       V(upSem);
@@ -46,7 +49,8 @@ inline leave(direction) {
       skip
     fi
   :: direction == 1 ->
-    up--;
+    t = up;
+    up = t - 1;
     if
     :: up == 0 ->
       V(downSem);
@@ -63,15 +67,15 @@ active [N] proctype C() {
 	do
 	::
 		if
-		:: _pid < 5 ->
+		:: _pid < 4 ->
 			enter(0);
 			inDown++;
-      inDown--;
+			inDown--;
 			leave(0);
 		:: else -> 
 			enter(1);
 			inUp++;
-      inUp--;
+			inUp--;
 			leave(1);
 		fi
 	od
