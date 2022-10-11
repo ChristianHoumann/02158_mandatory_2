@@ -119,3 +119,7 @@ active [N] proctype C() {
 active proctype alleySafety() {
 	assert(!(inUp > 0 && inDown > 0));
 }
+
+active proctype splitBinarySemaphore() {
+	assert(e + u + d <= 1);
+}
